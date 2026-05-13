@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Nexus Mail Pro | Master Edition</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --brand: #4f46e5;
+            --brand-hover: #4338ca;
+            --bg-app: #ffffff;
+            --bg-side: #f8fafc;
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --border-color: #f1f5f9;
+            --card-active: #f1f5f9;
+            --radius: 12px;
+            --star-color: #fbbf24;
+        }
+
+        body.dark-mode {
+            --bg-app: #0b0f1a;
+            --bg-side: #020617;
+            --text-main: #f1f5f9;
+            --text-sub: #94a3b8;
+            --border-color: #1e293b;
+            --card-active: #1e293b;
+        }
+
+        * { box-sizing: border-box; transition: background 0.2s, color 0.2s; }
+        body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-app); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+
+        /* SIDEBAR */
+        .sidebar { width: 260px; background: var(--bg-side); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 24px; }
+        .logo { font-weight: 700; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; margin-bottom: 32px; letter-spacing: -0.5px; }
+        .logo-box { width: 28px; height: 28px; background: var(--brand); border-radius: 6px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+
+        .btn-compose { background: var(--brand); color: white; border: none; padding: 14px; border-radius: var(--radius); cursor: pointer; font-weight: 600; margin-bottom: 30px; width: 100%; transition: 0.3s; }
+        .btn-compose:hover { background: var(--brand-hover); transform: translateY(-2px); }
+        
+        .nav-link { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: var(--radius); cursor: pointer; color: var(--text-sub); font-size: 0.9rem; margin-bottom: 4px; font-weight: 500; }
+        .nav-link:hover { background: var(--card-active); color: var(--text-main); }
+        .nav-link.active { background: var(--card-active); color: var(--brand); font-weight: 700; }
+        .badge { background: var(--brand); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; }
+
+        /* LISTA DE CORREOS */
+        .inbox-panel { width: 420px; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; }
+        .search-bar { padding: 24px; border-bottom: 1px solid var(--border-color); }
+        .search-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-side); color: var(--text-main); outline: none; }
+        
+        .mail-list { overflow-y: auto; flex: 1; scrollbar-width: thin; }
+        .mail-item { padding: 20px 24px; border-bottom: 1px solid var(--border-color); cursor: pointer; position: relative; }
+        .mail-item:hover { background: var(--bg-side); }
+        .mail-item.unread::before { content: ''; position: absolute; left: 0; top: 15px; bottom: 15px; width: 4px; background: var(--brand); border-radius: 0 4px 4px 0; }
+        
+        .m-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .star-btn { color: #ccc; font-size: 1.1rem; cursor: pointer; transition: 0.2s; }
+        .star-btn.active { color: var(--star-color); }
+        .star-btn:hover { transform: scale(1.2); }
+
+        /* VISOR */
+        .viewer-panel { flex: 1; display: flex; flex-direction: column; }
+        .viewer-actions { padding: 15px 40px; border-bottom: 1px solid var(--border-color); display: flex; gap: 15px; }
+        .action-btn { background: none; border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; cursor: pointer; color: var(--text-main); font-size: 0.85rem; font-weight: 500; }
+        .action-btn:hover { background: var(--card-active); border-color: var(--brand); }
+
+        .viewer-body { padding: 40px; overflow-y: auto; }
+        .avatar-circle { width: 48px; height: 48px; background: var(--brand); border-radius: 12px; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; }
+
+        /* COMPOSER */
+        .composer { position: fixed; bottom: 0; right: 40px; width: 550px; background: var(--bg-app); border: 1px solid var(--border-color); border-radius: 15px 15px 0 0; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); display: none; flex-direction: column; z-index: 1000; }
+        .composer-header { background: var(--text-main); color: var(--bg-app); padding: 15px 20px; display: flex; justify-content: space-between; border-radius: 15px 15px 0 0; align-items: center; }
+        .composer-body { padding: 25px; display: flex; flex-direction: column; gap: 15px; }
+        .composer-body input, .composer-body textarea { border: none; border-bottom: 1px solid var(--border-color); padding: 10px 0; background: transparent; color: var(--text-main); outline: none; font-family: inherit; font-size: 0.95rem; }
+        .btn-send-final { background: var(--brand); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: 700; margin-top: 10px; }
+
+        .theme-btn { margin-top: auto; padding: 12px; cursor: pointer; border-radius: 10px; background: var(--text-main); color: var(--bg-app); border: none; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; }
+    </style>
+</head>
+<body id="main">
+
+    <aside class="sidebar">
+        <div class="logo"><div class="logo-box"></div> Nexus Pro</div>
+        <button class="btn-compose" onclick="openComposer()">＋ Redactar Mensaje</button>
+        <nav>
+            <div class="nav-link active" onclick="setFolder('recibidos', this)">
+                <span>📥 Inbox</span><span class="badge" id="count-inbox">0</span>
+            </div>
+            <div class="nav-link" onclick="setFolder('enviados', this)"><span>📤 Enviados</span></div>
+            <div class="nav-link" onclick="setFolder('starred', this)">
+                <span>⭐ Destacados</span><span class="badge" id="count-starred" style="background:#fbbf24; color:#000">0</span>
+            </div>
+            <div class="nav-link" onclick="setFolder('trash', this)"><span>🗑️ Papelera</span></div>
+        </nav>
+        <button class="theme-btn" onclick="toggleTheme()">CAMBIAR APARIENCIA</button>
+    </aside>
+
+    <main class="inbox-panel">
+        <div class="search-bar"><input type="text" class="search-input" placeholder="Buscar en Nexus Mail..." oninput="doSearch(this.value)"></div>
+        <div class="mail-list" id="mailList"></div>
+    </main>
+
+    <section class="viewer-panel" id="mailViewer">
+        <div style="display:flex; height:100%; flex-direction:column; align-items:center; justify-content:center; opacity:0.2;">
+            <span style="font-size:3rem; margin-bottom:10px;">📩</span>
+            <p style="font-weight:600;">Selecciona un hilo para leer</p>
+        </div>
+    </section>
+
+    <!-- Composer Modal -->
+    <div class="composer" id="composer">
+        <div class="composer-header">
+            <span style="font-weight:600;">Nuevo Mensaje</span>
+            <button onclick="closeComposer()" style="background:none; border:none; color:inherit; cursor:pointer; font-size:1.5rem;">&times;</button>
+        </div>
+        <div class="composer-body">
+            <input type="text" id="to" placeholder="Destinatario (email)">
+            <input type="text" id="subject" placeholder="Asunto del correo">
+            <textarea id="msg" rows="10" placeholder="Escribe tu mensaje profesional..."></textarea>
+            <button class="btn-send-final" onclick="sendMail()">Enviar Correo Ahora</button>
+        </div>
+    </div>
+
+    <script>
+        let db = [
+            { id: 1, from: "Alex Rivera", sub: "Review de Código: Nexus v5", body: "Diego, he subido los comentarios a la Pull Request. Échale un ojo al sistema de autenticación, creo que podemos optimizar el token.", folder: "recibidos", unread: true, starred: true },
+            { id: 2, from: "Stripe Team", sub: "Reporte Mensual de Ingresos", body: "Tu cuenta ha generado un 15% más que el mes anterior. Adjuntamos el desglose de comisiones y pagos netos.", folder: "recibidos", unread: true, starred: false },
+            { id: 3, from: "Netflix", sub: "Novedades para el finde", body: "Hola Diego, ¡vuelve tu serie favorita! No te pierdas el estreno de la temporada 4 este viernes.", folder: "recibidos", unread: false, starred: false },
+            { id: 4, from: "AWS Security", sub: "Alerta de acceso inusual", body: "Se ha detectado un acceso desde una IP desconocida en Singapur. Por favor, verifica si has sido tú.", folder: "recibidos", unread: true, starred: false },
+            { id: 5, from: "GitHub", sub: "Has sido mencionado en #main", body: "@diego-dev ha corregido el bug de los iconos. Por favor, aprueba el merge.", folder: "recibidos", unread: false, starred: false },
+            { id: 6, from: "Slack", sub: "Resumen diario de hilos", body: "Tienes 4 menciones sin leer en el canal de #marketing y 2 mensajes directos de RRHH.", folder: "recibidos", unread: true, starred: false },
+            { id: 7, from: "Hacienda", sub: "Notificación Electrónica", body: "Tiene una nueva notificación pendiente de lectura en la Sede Electrónica. Plazo: 10 días.", folder: "recibidos", unread: true, starred: true },
+            { id: 8, from: "Spotify Business", sub: "Confirmación de Suscripción", body: "Gracias por actualizar a la cuenta de empresa. Tu factura ya está disponible en el panel.", folder: "recibidos", unread: false, starred: false },
+            { id: 9, from: "Uber", sub: "Tu viaje del jueves noche", body: "Gracias por viajar con nosotros. Aquí tienes el recibo de tu trayecto de 12.50€.", folder: "recibidos", unread: false, starred: false },
+            { id: 10, from: "LinkedIn", sub: "9 personas han visto tu perfil", body: "Varios reclutadores de 'Google' y 'Meta' han visitado tu perfil profesional esta semana.", folder: "recibidos", unread: true, starred: false }
+        ];
+
+        let currentFolder = 'recibidos';
+
+        function render(customData) {
+            const list = document.getElementById('mailList');
+            const dataToRender = customData || db.filter(m => {
+                if(currentFolder === 'starred') return m.starred && m.folder !== 'trash';
+                return m.folder === currentFolder;
+            });
+            
+            list.innerHTML = dataToRender.map(m => `
+                <div class="mail-item ${m.unread ? 'unread' : ''}" onclick="showMail(${m.id})">
+                    <div class="m-top">
+                        <span style="font-weight:700;">${m.from}</span>
+                        <span class="star-btn ${m.starred ? 'active' : ''}" onclick="toggleStar(event, ${m.id})">★</span>
+                    </div>
+                    <div style="font-size:0.85rem; font-weight:600; margin-bottom:4px;">${m.sub}</div>
+                    <div style="font-size:0.8rem; color:var(--text-sub); display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${m.body}</div>
+                </div>
+            `).join('');
+
+            updateCounters();
+        }
+
+        function updateCounters() {
+            document.getElementById('count-inbox').innerText = db.filter(m => m.folder === 'recibidos' && m.unread).length;
+            document.getElementById('count-starred').innerText = db.filter(m => m.starred && m.folder !== 'trash').length;
+        }
+
+        function showMail(id) {
+            const m = db.find(e => e.id === id);
+            m.unread = false;
+            render();
+
+            document.getElementById('mailViewer').innerHTML = `
+                <div class="viewer-actions">
+                    <button class="action-btn" onclick="moveToTrash(${m.id})">🗑️ Eliminar</button>
+                    <button class="action-btn" onclick="toggleStar(null, ${m.id})">⭐ ${m.starred ? 'Quitar estrella' : 'Destacar'}</button>
+                </div>
+                <div class="viewer-body">
+                    <div style="display:flex; align-items:center; gap:20px; margin-bottom:30px;">
+                        <div class="avatar-circle">${m.from[0]}</div>
+                        <div>
+                            <h1 style="margin:0; font-size:1.6rem; letter-spacing:-0.5px;">${m.sub}</h1>
+                            <div style="font-size:0.9rem; color:var(--text-sub)">De: <strong>${m.from}</strong> para diego@nexusmail.com</div>
+                        </div>
+                    </div>
+                    <div style="line-height:1.8; color:var(--text-main); font-size:1.05rem;">${m.body}</div>
+                </div>
+            `;
+        }
+
+        function toggleStar(e, id) {
+            if(e) e.stopPropagation();
+            const m = db.find(e => e.id === id);
+            m.starred = !m.starred;
+            render();
+            if(!e) showMail(id);
+        }
+
+        function moveToTrash(id) {
+            const m = db.find(e => e.id === id);
+            m.folder = 'trash';
+            m.starred = false;
+            render();
+            document.getElementById('mailViewer').innerHTML = `<div style="display:flex; height:100%; align-items:center; justify-content:center; opacity:0.3;">Mensaje movido a la papelera</div>`;
+        }
+
+        function setFolder(f, el) {
+            currentFolder = f;
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+            render();
+            document.getElementById('mailViewer').innerHTML = `<div style="display:flex; height:100%; align-items:center; justify-content:center; opacity:0.2;"><p>Carpeta: ${f}</p></div>`;
+        }
+
+        function sendMail() {
+            const to = document.getElementById('to').value;
+            const sub = document.getElementById('subject').value;
+            const msg = document.getElementById('msg').value;
+            if(!to || !sub) return alert("Por favor, indica destinatario y asunto.");
+
+            db.unshift({ id: Date.now(), from: `Para: ${to}`, sub: sub, body: msg, folder: 'enviados', unread: false, starred: false });
+            closeComposer();
+            render();
+            alert("¡Correo enviado con éxito!");
+        }
+
+        function doSearch(v) {
+            const searchRes = db.filter(m => 
+                m.folder === currentFolder && 
+                (m.from.toLowerCase().includes(v.toLowerCase()) || m.sub.toLowerCase().includes(v.toLowerCase()))
+            );
+            render(searchRes);
+        }
+
+        function toggleTheme() { document.getElementById('main').classList.toggle('dark-mode'); }
+        function openComposer() { document.getElementById('composer').style.display = 'flex'; }
+        function closeComposer() { document.getElementById('composer').style.display = 'none'; }
+
+        render();
+    </script>
+</body>
+</html>
