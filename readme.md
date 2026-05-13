@@ -1,4 +1,5 @@
 📨 Nexus Mail Pro
+
 Nexus Mail Pro es un cliente de correo electrónico moderno y minimalista desarrollado con un enfoque en la experiencia de usuario (UX) y un diseño SaaS de alta gama. Esta aplicación web permite gestionar flujos de comunicación de manera fluida a través de una interfaz limpia, reactiva y profesional.
 
 🚀 Características Principales
